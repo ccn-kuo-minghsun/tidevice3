@@ -84,15 +84,12 @@ def remove(afc: AfcService, path: str):
 
 
 @fsync.command(name="push")
-@click.argument('local_file', type=click.File('rb'))
+@click.argument('local_file', type=click.Path(exists=False))
 @click.argument('remote_file', type=click.Path(exists=False))
 @pass_afc
-def afc_push(afc: AfcService, local_file, remote_file):
+def afc_push(afc: AfcService, local_file: str, remote_file: str) -> None:
     """ push local file into /var/mobile/Media """
-    finfo = stat_file(afc, remote_file)
-    if finfo.is_dir():
-        remote_file = posixpath.join(remote_file, local_file.name)
-    afc.set_file_contents(remote_file, local_file.read())
+    afc.push(local_file, remote_file)
 
 
 @fsync.command('pull')
